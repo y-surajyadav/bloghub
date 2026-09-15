@@ -1,0 +1,61 @@
+<%- include('partials/header', { pageTitle: 'Edit: ' + post.title }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container" style="max-width: 780px;">
+        <div class="card">
+            <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                <h2>Edit Blog Post</h2>
+                <p class="text-muted">Update the contents, title, or category of your post.</p>
+            </div>
+
+            <div id="alertBox" class="alert" style="display: none;"></div>
+
+            <form id="editPostForm" data-post-id="<%= post.id %>">
+                <div class="form-group">
+                    <label for="title" class="form-label">Post Title</label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        class="form-input" 
+                        value="<%= post.title %>" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id" class="form-label">Category</label>
+                    <select id="category_id" name="category_id" class="form-select" required>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat.id %>" <%= post.category_id === cat.id ? 'selected' : '' %>>
+                                <%= cat.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="content" class="form-label">Article Content</label>
+                    <textarea 
+                        id="content" 
+                        name="content" 
+                        class="form-textarea" 
+                        style="min-height: 240px;" 
+                        required
+                    ><%= post.content %></textarea>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 2rem;">
+                    <a href="/posts/<%= post.id %>" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Update Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="/js/edit-post.js"></script>
+<%- include('partials/footer') %>

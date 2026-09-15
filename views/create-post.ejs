@@ -1,0 +1,62 @@
+<%- include('partials/header', { pageTitle: 'Create Post' }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container" style="max-width: 780px;">
+        <div class="card">
+            <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                <h2>Create New Blog Post</h2>
+                <p class="text-muted">Share your knowledge, code snippets, or thoughts with the community.</p>
+            </div>
+
+            <div id="alertBox" class="alert" style="display: none;"></div>
+
+            <form id="createPostForm">
+                <div class="form-group">
+                    <label for="title" class="form-label">Post Title</label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        class="form-input" 
+                        placeholder="e.g. Understanding Asynchronous JavaScript and Promises" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id" class="form-label">Category</label>
+                    <select id="category_id" name="category_id" class="form-select" required>
+                        <option value="">-- Select a Category --</option>
+                        <% categories.forEach(cat => { %>
+                            <option value="<%= cat.id %>"><%= cat.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="content" class="form-label">Article Content</label>
+                    <textarea 
+                        id="content" 
+                        name="content" 
+                        class="form-textarea" 
+                        style="min-height: 240px;" 
+                        placeholder="Write your article content here..." 
+                        required
+                    ></textarea>
+                    <span class="form-hint">Tip: Paragraph breaks and line returns will be formatted automatically.</span>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 2rem;">
+                    <a href="/" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Publish Post
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="/js/create-post.js"></script>
+<%- include('partials/footer') %>

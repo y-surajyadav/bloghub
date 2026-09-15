@@ -1,0 +1,22 @@
+<%- include('partials/header', { pageTitle: '404 - Page Not Found' }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container" style="text-align: center; padding: 4rem 1rem;">
+        <div class="card" style="max-width: 580px; margin: 0 auto; padding: 3rem 2rem;">
+            <div style="font-size: 4.5rem; font-weight: 800; color: var(--color-primary); line-height: 1;">
+                404
+            </div>
+            <h1 style="font-size: 1.75rem; margin-top: 1rem; margin-bottom: 0.75rem;">Page Not Found</h1>
+            <p class="text-muted" style="margin-bottom: 2rem;">
+                The page or blog post you are looking for does not exist, has been removed, or is temporarily unavailable.
+            </p>
+            <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                <a href="/" class="btn btn-primary">Return to Home</a>
+                <a href="/dashboard" class="btn btn-secondary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,30 @@
+<nav class="navbar">
+    <div class="container navbar-inner">
+        <a href="/" class="brand-logo" id="brandLogo">
+            <span class="brand-badge">B</span> BlogHub
+        </a>
+
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/" class="nav-link" id="navHome">Home</a></li>
+
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <!-- Logged-in User Links -->
+                <li><a href="/dashboard" class="nav-link" id="navDashboard">Dashboard</a></li>
+                <li><a href="/posts/create" class="nav-link" id="navCreatePost">+ Create Post</a></li>
+                <li><a href="/profile/<%= currentUser.id %>" class="nav-link" id="navProfile">Profile</a></li>
+                <li class="nav-user">
+                    <span class="nav-user-greeting">Hi, <strong><%= currentUser.name.split(' ')[0] %></strong></span>
+                    <a href="/api/auth/logout" class="btn btn-outline btn-sm btn-logout" id="navLogout">Logout</a>
+                </li>
+            <% } else { %>
+                <!-- Guest Visitor Links -->
+                <li><a href="/login" class="nav-link" id="navLogin">Login</a></li>
+                <li><a href="/register" class="btn btn-primary btn-sm" id="navRegister">Register</a></li>
+            <% } %>
+        </ul>
+    </div>
+</nav>

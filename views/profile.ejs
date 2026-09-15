@@ -1,0 +1,109 @@
+<%- include('partials/header', { pageTitle: profileUser.name + ' - Profile' }) %>
+<%- include('partials/navbar') %>
+
+<%
+    const isOwner = typeof currentUser !== 'undefined' && currentUser && currentUser.id === profileUser.id;
+    const joinedDate = new Date(profileUser.created_at).toLocaleDateString('en-US', {
+        month: 'long',
+        year: 'numeric'
+    });
+%>
+
+<main class="main-content">
+    <div class="container" style="max-width: 860px;">
+        <!-- Profile Header Card -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1.5rem;">
+                <div style="display: flex; gap: 1.25rem; align-items: center;">
+                    <div class="post-avatar" style="width: 72px; height: 72px; font-size: 2rem;">
+                        <%= profileUser.name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                        <h1 style="font-size: 1.75rem; margin-bottom: 0.25rem;"><%= profileUser.name %></h1>
+                        <p style="color: var(--text-muted); margin-bottom: 0.25rem;">📧 <%= profileUser.email %></p>
+                        <span style="font-size: 0.85rem; color: var(--text-light);">Member since <%= joinedDate %></span>
+                    </div>
+                </div>
+
+                <% if (isOwner) { %>
+                    <div>
+                        <a href="/profile/edit" class="btn btn-secondary btn-sm" id="editProfileBtn">
+                            ✏️ Edit Profile
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Bio -->
+            <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                <h3 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 0.5rem;">Bio</h3>
+                <p style="color: var(--text-main); line-height: 1.6; margin: 0;">
+                    <%= profileUser.bio || 'This user has not added a bio yet.' %>
+                </p>
+            </div>
+        </div>
+
+        <!-- Metric Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totalPosts %></div>
+                <div class="stat-label">Articles Published</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totalLikes %></div>
+                <div class="stat-label">Total Likes Received</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totalComments %></div>
+                <div class="stat-label">Total Comments Received</div>
+            </div>
+        </div>
+
+        <!-- User's Articles Section -->
+        <div style="margin-top: 2.5rem;">
+            <h2 style="margin-bottom: 1.25rem;">Articles by <%= profileUser.name %></h2>
+
+            <% if (userPosts && userPosts.length > 0) { %>
+                <div class="posts-grid">
+                    <% userPosts.forEach(post => { %>
+                        <%
+                            const excerpt = post.content.length > 120 
+                                ? post.content.substring(0, 120).trim() + '...' 
+                                : post.content;
+                            const postDate = new Date(post.created_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                            });
+                        %>
+                        <article class="post-card">
+                            <div class="post-card-body">
+                                <div class="post-meta-top">
+                                    <span class="badge badge-tech"><%= post.category_name %></span>
+                                    <span class="post-date"><%= postDate %></span>
+                                </div>
+                                <h3 class="post-card-title" style="font-size: 1.15rem;">
+                                    <a href="/posts/<%= post.id %>"><%= post.title %></a>
+                                </h3>
+                                <p class="post-card-excerpt"><%= excerpt %></p>
+                                <div class="post-card-footer">
+                                    <div class="post-stats">
+                                        <span class="stat-item">❤️ <%= post.like_count || 0 %></span>
+                                        <span class="stat-item">💬 <%= post.comment_count || 0 %></span>
+                                    </div>
+                                    <a href="/posts/<%= post.id %>" class="btn btn-outline btn-sm">Read →</a>
+                                </div>
+                            </div>
+                        </article>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <p class="text-muted" style="margin: 0;">No articles published yet.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

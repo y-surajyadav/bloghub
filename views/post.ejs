@@ -1,0 +1,168 @@
+<%- include('partials/header', { pageTitle: post.title }) %>
+<%- include('partials/navbar') %>
+
+<%
+    let badgeClass = 'badge-other';
+    const catLower = (post.category_name || '').toLowerCase();
+    if (catLower.includes('tech')) badgeClass = 'badge-tech';
+    else if (catLower.includes('prog')) badgeClass = 'badge-programming';
+    else if (catLower.includes('web')) badgeClass = 'badge-web';
+    else if (catLower.includes('edu')) badgeClass = 'badge-education';
+    else if (catLower.includes('ai') || catLower.includes('intel')) badgeClass = 'badge-ai';
+
+    const createdDate = new Date(post.created_at).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+    });
+
+    const isOwner = typeof currentUser !== 'undefined' && currentUser && currentUser.id === post.user_id;
+%>
+
+<main class="main-content">
+    <div class="container" style="max-width: 860px;" 
+         id="postDetailContainer" 
+         data-post-id="<%= post.id %>" 
+         data-user-id="<%= typeof currentUser !== 'undefined' && currentUser ? currentUser.id : '' %>"
+    >
+        <!-- Post Header -->
+        <header class="post-detail-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span class="badge <%= badgeClass %>"><%= post.category_name %></span>
+                <span class="post-date"><%= createdDate %></span>
+                <% if (post.updated_at && new Date(post.updated_at).getTime() > new Date(post.created_at).getTime() + 60000) { %>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">(Updated)</span>
+                <% } %>
+            </div>
+
+            <h1 class="post-detail-title"><%= post.title %></h1>
+
+            <div class="post-author-meta">
+                <div class="post-author-info">
+                    <div class="post-avatar">
+                        <%= post.author_name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                        <a href="/profile/<%= post.user_id %>" style="color: var(--text-main);">
+                            <%= post.author_name %>
+                        </a>
+                    </div>
+                </div>
+
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 1rem;">
+                    <span class="stat-item" title="Total Likes">❤️ <span id="likeCount"><%= post.like_count || 0 %> Likes</span></span>
+                    <span class="stat-item" title="Total Comments">💬 <span id="commentCountBadge"><%= post.comment_count || 0 %></span> Comments</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Post Content Body -->
+        <article class="post-content-body">
+            <%= post.content %>
+        </article>
+
+        <!-- Interaction Bar: Like Button & Owner Actions -->
+        <div class="post-actions-bar">
+            <div>
+                <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                    <button type="button" class="like-button <%= post.hasLiked ? 'liked' : '' %>" id="likeBtn">
+                        <span class="like-icon"><%= post.hasLiked ? '❤️' : '🤍' %></span>
+                        <span class="like-text"><%= post.hasLiked ? 'Liked' : 'Like' %></span>
+                    </button>
+                <% } else { %>
+                    <a href="/login" class="like-button" title="Sign in to like this post">
+                        <span class="like-icon">🤍</span>
+                        <span class="like-text">Like (Sign in)</span>
+                    </a>
+                <% } %>
+            </div>
+
+            <% if (isOwner) { %>
+                <div class="post-owner-actions">
+                    <a href="/posts/<%= post.id %>/edit" class="btn btn-secondary btn-sm" id="editPostBtn">
+                        ✏️ Edit Post
+                    </a>
+                    <button type="button" class="btn btn-danger btn-sm" id="deletePostBtn">
+                        🗑️ Delete Post
+                    </button>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Comments Section -->
+        <section class="comments-section">
+            <div class="comments-header">
+                <h3>Comments</h3>
+            </div>
+
+            <!-- Comment Form (Logged in) or Prompt (Guest) -->
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <form id="commentForm" class="card" style="margin-bottom: 2rem;">
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <label for="commentText" class="form-label">Join the Discussion</label>
+                        <textarea 
+                            id="commentText" 
+                            name="comment" 
+                            class="form-textarea" 
+                            style="min-height: 85px;" 
+                            placeholder="Share your thoughts on this article..." 
+                            required
+                        ></textarea>
+                    </div>
+                    <div style="text-align: right;">
+                        <button type="submit" class="btn btn-primary btn-sm" id="submitCommentBtn">
+                            Post Comment
+                        </button>
+                    </div>
+                </form>
+            <% } else { %>
+                <div class="card" style="text-align: center; padding: 1.5rem; margin-bottom: 2rem; background-color: var(--bg-surface-alt);">
+                    <p style="margin-bottom: 0.75rem; color: var(--text-muted);">Please log in to share your comments or like this post.</p>
+                    <a href="/login" class="btn btn-primary btn-sm">Sign In to Comment</a>
+                </div>
+            <% } %>
+
+            <!-- Comments List -->
+            <div id="commentsList">
+                <% if (comments && comments.length > 0) { %>
+                    <% comments.forEach(c => { %>
+                        <%
+                            const cDate = new Date(c.created_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                            });
+                            const isCommentOwner = typeof currentUser !== 'undefined' && currentUser && currentUser.id === c.user_id;
+                        %>
+                        <div class="comment-card" id="comment-<%= c.id %>">
+                            <div class="comment-header">
+                                <div>
+                                    <span class="comment-author"><%= c.username %></span>
+                                    <span class="comment-date" style="margin-left: 0.5rem;">• <%= cDate %></span>
+                                </div>
+                                <% if (isCommentOwner) { %>
+                                    <button type="button" class="comment-delete-btn" data-comment-id="<%= c.id %>" title="Delete comment">
+                                        Delete
+                                    </button>
+                                <% } %>
+                            </div>
+                            <p class="comment-text"><%= c.comment %></p>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p id="noCommentsMsg" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                        No comments yet. Be the first to share your thoughts!
+                    </p>
+                <% } %>
+            </div>
+        </section>
+
+        <!-- Back to Posts -->
+        <div style="margin-top: 3rem; text-align: center;">
+            <a href="/" class="btn btn-secondary">← Back to All Posts</a>
+        </div>
+    </div>
+</main>
+
+<script src="/js/post.js"></script>
+<%- include('partials/footer') %>

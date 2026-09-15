@@ -1,0 +1,93 @@
+<%- include('partials/header', { pageTitle: 'Create Account' }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="auth-wrapper">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Join BlogHub</h2>
+                    <p class="text-muted">Create a free account to publish articles, like posts, and join tech discussions.</p>
+                </div>
+
+                <div id="alertBox" class="alert" style="display: none;"></div>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            class="form-input" 
+                            placeholder="e.g. John Doe" 
+                            required 
+                            autocomplete="name"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="name@example.com" 
+                            required 
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="Minimum 6 characters" 
+                            required 
+                            autocomplete="new-password"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            class="form-input" 
+                            placeholder="Re-type your password" 
+                            required 
+                            autocomplete="new-password"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bio" class="form-label">Bio (Optional)</label>
+                        <textarea 
+                            id="bio" 
+                            name="bio" 
+                            class="form-textarea" 
+                            style="min-height: 80px;" 
+                            placeholder="Tell the community a little about your tech interests..."
+                        ></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%;">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    Already registered? <a href="/login">Sign in here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="/js/register.js"></script>
+<%- include('partials/footer') %>

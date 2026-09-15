@@ -1,0 +1,70 @@
+<%- include('partials/header', { pageTitle: 'Login' }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="auth-wrapper">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h2>Sign In to BlogHub</h2>
+                    <p class="text-muted">Enter your account credentials to continue.</p>
+                </div>
+
+                <!-- Dynamic Alert Box -->
+                <div id="alertBox" class="alert" style="display: none;"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="name@example.com" 
+                            required 
+                            autocomplete="email"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-input" 
+                            placeholder="••••••••" 
+                            required 
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%;">
+                        Login
+                    </button>
+                </form>
+
+                <!-- College Demo Helper (quick login with pre-seeded accounts) -->
+                <div class="demo-accounts-box">
+                    <strong style="display: block; margin-bottom: 0.35rem; color: var(--text-main);">
+                        🧪 Quick Demo Logins (Viva Evaluation):
+                    </strong>
+                    <span style="color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
+                        Click any test user below to auto-fill credentials (Password: <code>password123</code>):
+                    </span>
+                    <button type="button" class="demo-btn" data-email="alex@bloghub.com">Alex Johnson (alex@bloghub.com)</button>
+                    <button type="button" class="demo-btn" data-email="sarah@bloghub.com">Sarah Williams (sarah@bloghub.com)</button>
+                    <button type="button" class="demo-btn" data-email="david@bloghub.com">David Miller (david@bloghub.com)</button>
+                </div>
+
+                <div class="auth-footer">
+                    Don't have an account? <a href="/register">Register here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="/js/login.js"></script>
+<%- include('partials/footer') %>

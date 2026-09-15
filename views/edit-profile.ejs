@@ -1,0 +1,128 @@
+<%- include('partials/header', { pageTitle: 'Edit Profile' }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container" style="max-width: 650px;">
+        <div class="card">
+            <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                <h2>Edit Profile</h2>
+                <p class="text-muted">Update your public author information.</p>
+            </div>
+
+            <div id="alertBox" class="alert" style="display: none;"></div>
+
+            <form id="editProfileForm" data-user-id="<%= user.id %>">
+                <div class="form-group">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        class="form-input" 
+                        value="<%= user.name %>" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address (Read-only)</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        class="form-input" 
+                        value="<%= user.email %>" 
+                        disabled 
+                        style="background-color: var(--bg-surface-alt); cursor: not-allowed;"
+                    >
+                    <span class="form-hint">Email address cannot be modified to maintain account uniqueness.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio" class="form-label">Author Bio</label>
+                    <textarea 
+                        id="bio" 
+                        name="bio" 
+                        class="form-textarea" 
+                        style="min-height: 120px;" 
+                        placeholder="Tell readers about yourself, your skills, or what you write about..."
+                    ><%= user.bio || '' %></textarea>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 2rem;">
+                    <a href="/profile/<%= user.id %>" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('editProfileForm');
+    const alertBox = document.getElementById('alertBox');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (form) {
+        const userId = form.dataset.userId;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            alertBox.style.display = 'none';
+            alertBox.textContent = '';
+            alertBox.className = 'alert';
+
+            const name = document.getElementById('name').value.trim();
+            const bio = document.getElementById('bio').value.trim();
+
+            if (!name) {
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'Name is required.';
+                alertBox.style.display = 'block';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            try {
+                const response = await fetch(`/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, bio })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alertBox.className = 'alert alert-success';
+                    alertBox.textContent = 'Profile updated successfully! Redirecting...';
+                    alertBox.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = `/profile/${userId}`;
+                    }, 500);
+                } else {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = data.message || 'Failed to update profile.';
+                    alertBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Changes';
+                }
+            } catch (err) {
+                console.error('Update profile error:', err);
+                alertBox.className = 'alert alert-danger';
+                alertBox.textContent = 'A network error occurred while saving.';
+                alertBox.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Changes';
+            }
+        });
+    }
+});
+</script>
+
+<%- include('partials/footer') %>

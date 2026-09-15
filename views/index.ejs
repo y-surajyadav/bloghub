@@ -1,0 +1,177 @@
+<%- include('partials/header', { pageTitle: 'Home' }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <!-- Hero Welcome Header -->
+        <section class="hero-section">
+            <h1 class="hero-title">Welcome to BlogHub</h1>
+            <p class="hero-subtitle">Discover insightful articles, developer guides, academic tutorials, and stories from tech enthusiasts.</p>
+        </section>
+
+        <!-- Search & Category Filters -->
+        <section class="filter-container">
+            <form action="/" method="GET" class="search-form" id="searchForm">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        id="searchInput"
+                        class="form-input search-input" 
+                        placeholder="Search posts by title or content..." 
+                        value="<%= searchQuery || '' %>"
+                    >
+                </div>
+                <% if (activeCategory && activeCategory !== 'all') { %>
+                    <input type="hidden" name="category" value="<%= activeCategory %>">
+                <% } %>
+                <button type="submit" class="btn btn-primary" id="searchSubmitBtn">Search</button>
+                <% if (searchQuery) { %>
+                    <a href="/" class="btn btn-secondary" title="Clear search">Clear</a>
+                <% } %>
+            </form>
+
+            <!-- Category Filter Tabs -->
+            <div class="category-tabs" id="categoryTabs">
+                <a 
+                    href="/" 
+                    class="category-tab <%= !activeCategory || activeCategory === 'all' ? 'active' : '' %>"
+                    data-category="all"
+                >
+                    All
+                </a>
+                <% categories.forEach(cat => { %>
+                    <a 
+                        href="/?category=<%= cat.id %><%= searchQuery ? '&search=' + encodeURIComponent(searchQuery) : '' %>" 
+                        class="category-tab <%= activeCategory == cat.id ? 'active' : '' %>"
+                        data-category="<%= cat.id %>"
+                    >
+                        <%= cat.name %>
+                    </a>
+                <% }) %>
+            </div>
+        </section>
+
+        <!-- Filter / Result Summary -->
+        <% if (searchQuery || (activeCategory && activeCategory !== 'all')) { %>
+            <div style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <p style="margin: 0; color: var(--text-muted);">
+                    Showing results <%= totalPosts %> found 
+                    <% if (searchQuery) { %> for "<strong><%= searchQuery %></strong>"<% } %>
+                </p>
+                <a href="/" style="font-size: 0.9rem; font-weight: 600;">Reset all filters</a>
+            </div>
+        <% } %>
+
+        <!-- Blog Posts Grid -->
+        <% if (posts && posts.length > 0) { %>
+            <div class="posts-grid" id="postsGrid">
+                <% posts.forEach(post => { %>
+                    <% 
+                        // Map category name to style badge
+                        let badgeClass = 'badge-other';
+                        const catLower = (post.category_name || '').toLowerCase();
+                        if (catLower.includes('tech')) badgeClass = 'badge-tech';
+                        else if (catLower.includes('prog')) badgeClass = 'badge-programming';
+                        else if (catLower.includes('web')) badgeClass = 'badge-web';
+                        else if (catLower.includes('edu')) badgeClass = 'badge-education';
+                        else if (catLower.includes('ai') || catLower.includes('intel')) badgeClass = 'badge-ai';
+
+                        // Format excerpt
+                        const excerpt = post.content.length > 150 
+                            ? post.content.substring(0, 150).trim() + '...' 
+                            : post.content;
+
+                        // Format date
+                        const formattedDate = new Date(post.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    %>
+                    <article class="post-card">
+                        <div class="post-card-body">
+                            <div class="post-meta-top">
+                                <span class="badge <%= badgeClass %>"><%= post.category_name %></span>
+                                <span class="post-date"><%= formattedDate %></span>
+                            </div>
+                            <h2 class="post-card-title">
+                                <a href="/posts/<%= post.id %>"><%= post.title %></a>
+                            </h2>
+                            <p class="post-card-excerpt"><%= excerpt %></p>
+                            <div class="post-card-footer">
+                                <div class="post-author">
+                                    <span>✍️</span>
+                                    <span><%= post.author_name %></span>
+                                </div>
+                                <div class="post-stats">
+                                    <span class="stat-item" title="Likes">❤️ <%= post.like_count || 0 %></span>
+                                    <span class="stat-item" title="Comments">💬 <%= post.comment_count || 0 %></span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <a href="/posts/<%= post.id %>" class="btn btn-outline btn-sm" style="width: 100%;">Read More →</a>
+                            </div>
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+
+            <!-- Server-Side Pagination -->
+            <% if (totalPages > 1) { %>
+                <%
+                    function buildPageUrl(pageNum) {
+                        const params = [];
+                        if (searchQuery) params.push('search=' + encodeURIComponent(searchQuery));
+                        if (activeCategory && activeCategory !== 'all') params.push('category=' + encodeURIComponent(activeCategory));
+                        params.push('page=' + pageNum);
+                        return '/?' + params.join('&');
+                    }
+                %>
+                <div class="pagination">
+                    <!-- Previous Button -->
+                    <% if (currentPage > 1) { %>
+                        <a href="<%= buildPageUrl(currentPage - 1) %>" class="page-btn" id="prevPageBtn">Previous</a>
+                    <% } else { %>
+                        <span class="page-btn disabled">Previous</span>
+                    <% } %>
+
+                    <!-- Numbered Pages -->
+                    <% for (let p = 1; p <= totalPages; p++) { %>
+                        <a 
+                            href="<%= buildPageUrl(p) %>" 
+                            class="page-btn <%= currentPage === p ? 'active' : '' %>"
+                        >
+                            <%= p %>
+                        </a>
+                    <% } %>
+
+                    <!-- Next Button -->
+                    <% if (currentPage < totalPages) { %>
+                        <a href="<%= buildPageUrl(currentPage + 1) %>" class="page-btn" id="nextPageBtn">Next</a>
+                    <% } else { %>
+                        <span class="page-btn disabled">Next</span>
+                    <% } %>
+                </div>
+            <% } %>
+
+        <% } else { %>
+            <!-- Empty State -->
+            <div class="empty-state">
+                <span class="empty-icon">📝</span>
+                <h2>No Posts Found</h2>
+                <p class="text-muted">No blog posts match your current search query or category filter.</p>
+                <div style="margin-top: 1.25rem;">
+                    <% if (searchQuery || (activeCategory && activeCategory !== 'all')) { %>
+                        <a href="/" class="btn btn-secondary">Clear Filters</a>
+                    <% } else { %>
+                        <a href="/posts/create" class="btn btn-primary">+ Create the First Post</a>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

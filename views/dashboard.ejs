@@ -1,0 +1,145 @@
+<%- include('partials/header', { pageTitle: 'Author Dashboard' }) %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <!-- Dashboard Greeting -->
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2rem;">
+            <div>
+                <h1>Dashboard</h1>
+                <p class="text-muted" style="margin: 0;">Welcome back, <strong><%= user.name %></strong>! Here is an overview of your activity.</p>
+            </div>
+            <div>
+                <a href="/posts/create" class="btn btn-primary">+ Create New Post</a>
+            </div>
+        </div>
+
+        <!-- Metric Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totalPosts %></div>
+                <div class="stat-label">Total Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totalLikes %></div>
+                <div class="stat-label">Total Likes Received</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number"><%= stats.totalComments %></div>
+                <div class="stat-label">Total Comments Received</div>
+            </div>
+        </div>
+
+        <!-- User's Posts Section -->
+        <div style="margin-top: 2.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+                <h2>My Published Articles</h2>
+                <span class="text-muted" style="font-size: 0.9rem;"><%= posts.length %> <%= posts.length === 1 ? 'post' : 'posts' %> published</span>
+            </div>
+
+            <% if (posts && posts.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Published</th>
+                                <th>Likes</th>
+                                <th>Comments</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% posts.forEach(post => { %>
+                                <%
+                                    const postDate = new Date(post.created_at).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric'
+                                    });
+                                %>
+                                <tr id="dashboard-post-<%= post.id %>">
+                                    <td>
+                                        <a href="/posts/<%= post.id %>" style="font-weight: 600; color: var(--text-main);">
+                                            <%= post.title %>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-tech"><%= post.category_name %></span>
+                                    </td>
+                                    <td style="color: var(--text-muted); font-size: 0.9rem;">
+                                        <%= postDate %>
+                                    </td>
+                                    <td>❤️ <%= post.like_count || 0 %></td>
+                                    <td>💬 <%= post.comment_count || 0 %></td>
+                                    <td style="text-align: right;">
+                                        <div class="action-buttons" style="justify-content: flex-end;">
+                                            <a href="/posts/<%= post.id %>" class="btn btn-secondary btn-sm" title="View Article">
+                                                View
+                                            </a>
+                                            <a href="/posts/<%= post.id %>/edit" class="btn btn-outline btn-sm" title="Edit Article">
+                                                Edit
+                                            </a>
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-danger btn-sm delete-dashboard-post" 
+                                                data-post-id="<%= post.id %>" 
+                                                title="Delete Article"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <span class="empty-icon">✍️</span>
+                    <h3>You haven't written any posts yet!</h3>
+                    <p class="text-muted">Start writing and sharing your technology articles with the community.</p>
+                    <div style="margin-top: 1.25rem;">
+                        <a href="/posts/create" class="btn btn-primary">+ Create Your First Post</a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Delete handler directly in dashboard
+    const deleteButtons = document.querySelectorAll('.delete-dashboard-post');
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const postId = btn.dataset.postId;
+            const confirmed = confirm('Are you sure you want to delete this post? This will also remove all its comments and likes.');
+            if (!confirmed) return;
+
+            try {
+                const response = await fetch(`/api/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    const row = document.getElementById(`dashboard-post-${postId}`);
+                    if (row) row.remove();
+                    alert('Post deleted successfully.');
+                } else {
+                    alert(data.message || 'Failed to delete post.');
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                alert('A network error occurred while deleting.');
+            }
+        });
+    });
+});
+</script>
+
+<%- include('partials/footer') %>
