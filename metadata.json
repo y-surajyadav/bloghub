@@ -1,0 +1,6 @@
+{
+  "name": "BlogHub",
+  "description": "A full-stack blog application with user authentication, posts CRUD, search, categories, likes, comments, and user dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
