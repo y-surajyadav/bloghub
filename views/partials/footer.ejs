@@ -1,20 +1,71 @@
 <footer class="footer">
-    <div class="container footer-inner">
-        <div>
-            <strong>BlogHub</strong> — Full Stack Blog Application
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                Web Technologies Course End-Semester Project
+    <div class="container">
+        <div class="footer-top">
+            <!-- Brand Column -->
+            <div class="footer-brand">
+                <a href="/" class="brand-logo" id="footerBrandLogo">
+                    <span class="brand-badge">B</span> BlogHub
+                </a>
+                <p>
+                    A modern publishing platform for writers, developers, and thinkers to share ideas, explore in-depth articles, and connect through thoughtful discussions.
+                </p>
+            </div>
+
+            <!-- Quick Navigation -->
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="/">Home Feed</a></li>
+                    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                        <li><a href="/dashboard">My Dashboard</a></li>
+                        <li><a href="/posts/create">Write a Post</a></li>
+                        <li><a href="/profile/<%= currentUser.id %>">Author Profile</a></li>
+                    <% } else { %>
+                        <li><a href="/login">Sign In</a></li>
+                        <li><a href="/register">Create Account</a></li>
+                    <% } %>
+                </ul>
+            </div>
+
+            <!-- Categories -->
+            <div class="footer-col">
+                <h4>Discover</h4>
+                <ul class="footer-links">
+                    <li><a href="/?category=1">Technology</a></li>
+                    <li><a href="/?category=2">Programming</a></li>
+                    <li><a href="/?category=3">Web Development</a></li>
+                    <li><a href="/?category=5">Artificial Intelligence</a></li>
+                    <li><a href="/?category=4">Education</a></li>
+                </ul>
+            </div>
+
+            <!-- Topics & Community -->
+            <div class="footer-col">
+                <h4>Trending Topics</h4>
+                <div class="footer-tags">
+                    <a href="/?category=3" class="footer-tag">#WebDev</a>
+                    <a href="/?category=2" class="footer-tag">#JavaScript</a>
+                    <a href="/?category=5" class="footer-tag">#AI</a>
+                    <a href="/?category=1" class="footer-tag">#Tech</a>
+                    <a href="/?category=2" class="footer-tag">#NodeJS</a>
+                    <a href="/?category=3" class="footer-tag">#FullStack</a>
+                </div>
             </div>
         </div>
-        <div class="footer-tech-stack">
-            <span class="tech-chip">HTML</span>
-            <span class="tech-chip">CSS</span>
-            <span class="tech-chip">JavaScript</span>
-            <span class="tech-chip">Node.js</span>
-            <span class="tech-chip">Express.js</span>
-            <span class="tech-chip">EJS</span>
-            <span class="tech-chip">MySQL</span>
-            <span class="tech-chip">REST API</span>
+
+        <div class="footer-bottom">
+            <div>
+                &copy; <%= new Date().getFullYear() %> <strong>BlogHub</strong>. All rights reserved.
+            </div>
+            <div class="footer-bottom-links">
+                <a href="/">Privacy</a>
+                <span>•</span>
+                <a href="/">Terms</a>
+                <span>•</span>
+                <a href="/">Guidelines</a>
+                <span>•</span>
+                <a href="/">Community</a>
+            </div>
         </div>
     </div>
 </footer>
